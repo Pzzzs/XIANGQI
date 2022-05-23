@@ -1,0 +1,62 @@
+package view;
+import controller.GameController;
+import javax.swing.*;
+import java.awt.*;
+
+public class LoadFrame extends JFrame {
+    private final int WIDTH;
+    private final int HEIGTH;
+    private GameController gameController;
+
+    public LoadFrame(int width, int heigth) {
+
+        setTitle("Load"); //设置标题
+
+        WIDTH = width;
+        HEIGTH = heigth;
+
+        setSize(WIDTH, HEIGTH);
+        setLocationRelativeTo(null); // Center the window.
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); //设置程序关闭按键，如果点击右上方的叉就游戏全部关闭了
+        setLayout(null);
+
+        addNewGameButton();
+        addQuitGameButton();
+        addLoadGameButton();
+    }
+
+    private void addNewGameButton(){
+        JButton button = new JButton("New Game");
+        ChessGameFrame mainFrame = new ChessGameFrame(1000, 760);
+        button.addActionListener(e -> mainFrame.setVisible(true));
+        button.setLocation(HEIGTH, HEIGTH / 10 + 120);
+        button.setSize(200, 60);
+        button.setFont(new Font("Rockwell", Font.BOLD, 20));
+        add(button);
+    }
+
+    private void addLoadGameButton() {
+        JButton button = new JButton("Load");
+        button.setLocation(HEIGTH, HEIGTH / 10 + 360);
+        button.setSize(200, 60);
+        button.setFont(new Font("Rockwell", Font.BOLD, 20));
+        add(button);
+
+        button.addActionListener(e -> {
+            System.out.println("Click load");
+            String path = JOptionPane.showInputDialog(this,"Input Path here");
+            gameController.loadGameFromFile(path);
+        });
+    }
+
+    private void addQuitGameButton(){
+        JButton button = new JButton("Quit Game");
+        button.addActionListener(e -> System.exit(0));
+        button.setLocation(HEIGTH, HEIGTH / 10 + 240);
+        button.setSize(200, 60);
+        button.setFont(new Font("Rockwell", Font.BOLD, 20));
+        add(button);
+    }
+
+
+}
