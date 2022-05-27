@@ -1,0 +1,156 @@
+package view;
+import controller.GameController;
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+
+public class LoadFrame extends JFrame {
+    private final int WIDTH;
+    private final int HEIGTH;
+    private GameController gameController;
+
+    public LoadFrame(int width, int heigth) {
+
+        setTitle("Load"); //设置标题
+
+        WIDTH = width;
+        HEIGTH = heigth;
+
+        setSize(WIDTH, HEIGTH);
+        setLocationRelativeTo(null); // Center the window.
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); //设置程序关闭按键，如果点击右上方的叉就游戏全部关闭了
+        setLayout(null);
+
+        ImageIcon pic = new ImageIcon("picture.png");
+        JLabel label = new JLabel(pic);
+        label.setLocation(150, 100);
+        label.setSize(500, 500);
+        add(label);
+
+        addLabel();
+        addNewGameButton();
+        addLoadGameButton();
+        addQuitGameButton();
+
+    }
+
+    private void addLabel() {
+        JLabel statusLabel = new JLabel("Chess");
+        statusLabel.setLocation(HEIGTH, HEIGTH / 10);
+        statusLabel.setSize(200, 60);
+        statusLabel.setFont(new Font("Rockwell", Font.BOLD, 50));
+        add(statusLabel);
+    }
+
+    private void addNewGameButton(){
+        JButton button = new JButton("New Game");
+        button.setLocation(HEIGTH, HEIGTH / 10 + 120);
+        button.setSize(200, 60);
+        button.setFont(new Font("Rockwell", Font.BOLD, 20));
+        add(button);
+
+        button.addActionListener(e -> {
+            System.out.println("Click new");
+
+            File file = new File("new.txt");
+            try {
+                Scanner input = new Scanner(file);
+                List<String> chessboard = new ArrayList<>();
+                while (input.hasNext()){
+                    chessboard.add(input.nextLine());
+                }
+                ChessGameFrame mainFrame = new ChessGameFrame(1000, 760, (ArrayList<String>) chessboard);
+                mainFrame.setVisible(true);
+
+
+                System.out.println(chessboard);
+
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+
+        });
+    }
+
+    private void addLoadGameButton() {
+        JButton button = new JButton("Load Game");
+        button.setLocation(HEIGTH, HEIGTH / 10 + 240);
+        button.setSize(200, 60);
+        button.setFont(new Font("Rockwell", Font.BOLD, 20));
+        add(button);
+
+        button.addActionListener(e -> {
+            System.out.println("Click load");
+            String path = JOptionPane.showInputDialog(this,"Input Path here");
+            File file = new File(path+".txt");
+            test(file);
+            try {
+                Scanner input = new Scanner(file);
+                List<String> chessboard1 = new ArrayList<>();
+                while (input.hasNext()){
+                    chessboard1.add(input.nextLine());
+                }
+                ChessGameFrame mainFrame = new ChessGameFrame(1000, 760, (ArrayList<String>) chessboard1);
+                mainFrame.setVisible(true);
+
+
+                System.out.println(chessboard1);
+
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+
+        });
+    }
+
+    public boolean test(File file){
+        String path = file.getPath();
+
+        try {
+            List<String> input = Files.readAllLines(Paths.get(path));
+            List<Character> chesscomponent= Arrays.asList('R','r','K','k','Q','q','B','b','P','p','_','n','N','w');
+            for (int i=0;i<input.size();i++){
+                if (!input.contains(chesscomponent)) {
+                    JOptionPane.showMessageDialog(null, "Wrong Chesscomponent", "错误信息", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+            }
+            if (!path.endsWith(".txt")){
+                JOptionPane.showMessageDialog(null,"Wrong Format","错误信息",JOptionPane.ERROR_MESSAGE);
+                return false;}
+            else if (input.size()!=9){
+                JOptionPane.showMessageDialog(null,"Wrong Size","错误信息",JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+            else if (input.get(9).charAt(1)!='w'&&input.get(9).charAt(1)!='b'){
+                JOptionPane.showMessageDialog(null,"Lost Next Player","错误信息",JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return true;}
+
+
+    private void addQuitGameButton(){
+        JButton button = new JButton("Quit Game");
+        button.addActionListener(e -> System.exit(0));
+        button.setLocation(HEIGTH, HEIGTH / 10 + 360);
+        button.setSize(200, 60);
+        button.setFont(new Font("Rockwell", Font.BOLD, 20));
+        add(button);
+    }
+
+
+}
