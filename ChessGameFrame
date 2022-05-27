@@ -1,0 +1,159 @@
+package view;
+
+import controller.GameController;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import javax.swing.*;
+import java.awt.*;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+/**
+ * 这个类表示游戏过程中的整个游戏界面，是一切的载体
+ */
+public class ChessGameFrame extends JFrame {
+    //    public final Dimension FRAME_SIZE ;
+    private final int WIDTH;
+    private final int HEIGTH;
+    public final int CHESSBOARD_SIZE;
+    private GameController gameController;
+
+    public ChessGameFrame(int width, int height, ArrayList<String> load) {
+        setTitle("2022 CS102A Project Demo"); //设置标题
+        this.WIDTH = width;
+        this.HEIGTH = height;
+        this.CHESSBOARD_SIZE = HEIGTH * 4 / 5;
+
+        setSize(WIDTH, HEIGTH);
+        setLocationRelativeTo(null); // Center the window.
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); //设置程序关闭按键，如果点击右上方的叉就游戏全部关闭了
+        setLayout(null);
+
+
+        addChessboard(load);
+        addLabel();
+        addNewGameButton();
+        addLoadGameButton();
+        addSaveGameButton();
+        addQuitGameButton();
+
+    }
+
+
+
+    /**
+     * 在游戏面板中添加棋盘
+     */
+    private void addChessboard(ArrayList<String> load) {
+        Chessboard chessboard = new Chessboard(CHESSBOARD_SIZE, CHESSBOARD_SIZE,load);
+        gameController = new GameController(chessboard);
+        chessboard.setLocation(HEIGTH / 10, HEIGTH / 10);
+        add(chessboard);
+    }
+
+
+    /**
+     * 在游戏面板中添加标签
+     */
+    private void addLabel() {
+        JLabel statusLabel = new JLabel(this.gameController.toString());
+        statusLabel.setLocation(HEIGTH, HEIGTH / 10);
+        statusLabel.setSize(200, 60);
+        statusLabel.setFont(new Font("Rockwell", Font.BOLD, 50));
+        add(statusLabel);
+    }
+
+
+    private void addNewGameButton(){
+        JButton button = new JButton("New Game");
+        button.setLocation(HEIGTH, HEIGTH / 10 + 120);
+        button.setSize(200, 60);
+        button.setFont(new Font("Rockwell", Font.BOLD, 20));
+        add(button);
+
+        button.addActionListener(e -> {
+            System.out.println("Click new");
+
+            File file = new File("new.txt");
+            try {
+                Scanner input = new Scanner(file);
+                List<String> chessboard = new ArrayList<>();
+                while (input.hasNext()){
+                    chessboard.add(input.nextLine());
+                }
+                ChessGameFrame mainFrame = new ChessGameFrame(1000, 760, (ArrayList<String>) chessboard);
+                mainFrame.setVisible(true);
+
+
+                System.out.println(chessboard);
+
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+
+        });
+    }
+
+
+    private void addLoadGameButton() {
+        JButton button = new JButton("Load Game");
+        button.setLocation(HEIGTH, HEIGTH / 10 + 240);
+        button.setSize(200, 60);
+        button.setFont(new Font("Rockwell", Font.BOLD, 20));
+        add(button);
+
+        button.addActionListener(e -> {
+            System.out.println("Click load");
+            String path = JOptionPane.showInputDialog(this,"Input Path here");
+            File file = new File(path+".txt");
+            try {
+                Scanner input = new Scanner(file);
+                List<String> chessboard1 = new ArrayList<>();
+                while (input.hasNext()){
+                    chessboard1.add(input.nextLine());
+                }
+                ChessGameFrame mainFrame = new ChessGameFrame(1000, 760, (ArrayList<String>) chessboard1);
+                mainFrame.setVisible(true);
+
+
+                System.out.println(chessboard1);
+
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+
+        });
+    }
+
+    private void addSaveGameButton() {
+        JButton button = new JButton("Save Game");
+        button.setLocation(HEIGTH, HEIGTH / 10 + 360);
+        button.setSize(200, 60);
+        button.setFont(new Font("Rockwell", Font.BOLD, 20));
+        add(button);
+
+        button.addActionListener(e -> {
+            System.out.println("Click Save");
+            try(PrintWriter output = new PrintWriter("save.txt");) {
+                output.println(this.gameController.toString());
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+    }
+
+    private void addQuitGameButton(){
+        JButton button = new JButton("Quit Game");
+        button.addActionListener(e -> System.exit(0));
+        button.setLocation(HEIGTH, HEIGTH / 10 + 480);
+        button.setSize(200, 60);
+        button.setFont(new Font("Rockwell", Font.BOLD, 20));
+        add(button);
+    }
+
+}
